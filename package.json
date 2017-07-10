@@ -1,0 +1,23 @@
+{
+  "name": "connection",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://drevcerno@github.com/ctx-project/connection.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ctx-project/connection/issues"
+  },
+  "homepage": "https://github.com/ctx-project/connection#readme"
+}
