@@ -1,4 +1,7 @@
-var l = function(o) {console.log(o); return o;}
+var l = function(o) {console.log(o); return o;},
+		require = require || undefined,
+		module = module || {};
+		
 if(require) var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 module.exports = CtxConnection;
@@ -10,7 +13,7 @@ function CtxConnection(base, user) {
 }
 
 CtxConnection.prototype.getUrl = function() {
-	return 'http://' + this.base + '/ctx/' + this.user;	
+	return (this.base.startsWith('http') ? '' : 'http://') + this.base + '/ctx/' + this.user;	
 }
 
 CtxConnection.prototype.getText = function() {
@@ -35,25 +38,25 @@ CtxContext.prototype.getText = function() {
 }
 
 CtxContext.prototype.get = function(text, cb) {
-	this.ajax(this.getUrl() + '/get/' + encodeURIComponent(this.getText() + ' ' + text), cb);
+	this.ajax(this.getUrl() + '/get/' + encodeURIComponent(this.getText() + ' ' + text), cb, this);
 }
 
 CtxContext.prototype.put = function(text, cb) {
-	this.ajax(this.getUrl() + '/put/' + encodeURIComponent(this.getText() + ' ' + text), cb);
+	this.ajax(this.getUrl() + '/put/' + encodeURIComponent(this.getText() + ' ' + text), cb, this);
 }
 
 CtxContext.prototype.sub = function(text) {
 	return new CtxContext(this, text);
 }
 
-CtxContext.prototype.ajax = function(url, cb) {
+CtxContext.prototype.ajax = function(url, cb, ctx) {
 	var xhr = new XMLHttpRequest();
 
 	xhr.open('GET', url, true);
 	
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState === 4)
-			cb(xhr.responseText);
+			cb(xhr.responseText, ctx);
 	}
 	
 	xhr.send();
