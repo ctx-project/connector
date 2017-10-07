@@ -16,6 +16,11 @@ CtxConnection.prototype.getUrl = function() {
 	return (this.base.startsWith('http') ? '' : 'http://') + this.base + '/ctx/' + this.user;	
 }
 
+CtxConnection.prototype.hint = function(text, cb) {
+	CtxConnection.ajax(this.getUrl() + '/hint/' + encodeURIComponent(text), cb, this);
+	return this;
+}
+
 CtxConnection.prototype.getQuery = function() {
 	return '';	
 }
@@ -26,6 +31,19 @@ CtxConnection.prototype.getPath = function() {
 
 CtxConnection.prototype.sub = function(query) {
 	return new CtxContext(this, query);
+}
+
+CtxConnection.ajax = function(url, cb, details) {
+	var xhr = new XMLHttpRequest();
+
+	xhr.open('GET', url, true);
+	
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState === 4)
+			cb(xhr.responseText, details);
+	}
+	
+	xhr.send();
 }
 
 function CtxContext(parent, query) {
@@ -54,28 +72,15 @@ CtxContext.prototype.getQuery = function() {
 }
 
 CtxContext.prototype.get = function(query, cb) {
-	this.ajax(this.getUrl() + '/get/' + encodeURIComponent(this.getQuery() + ' ' + query), cb, this);
+	CtxConnection.ajax(this.getUrl() + '/get/' + encodeURIComponent(this.getQuery() + ' ' + query), cb, this);
 	return this;
 }
 
 CtxContext.prototype.put = function(query, cb) {
-	this.ajax(this.getUrl() + '/put/' + encodeURIComponent(this.getQuery() + ' ' + query), cb, this);
+	CtxConnection.ajax(this.getUrl() + '/put/' + encodeURIComponent(this.getQuery() + ' ' + query), cb, this);
 	return this;
 }
 
 CtxContext.prototype.sub = function(query) {
 	return new CtxContext(this, query);
-}
-
-CtxContext.prototype.ajax = function(url, cb, ctx) {
-	var xhr = new XMLHttpRequest();
-
-	xhr.open('GET', url, true);
-	
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState === 4)
-			cb(xhr.responseText, ctx);
-	}
-	
-	xhr.send();
 }
