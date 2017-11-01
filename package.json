@@ -1,10 +1,10 @@
 {
-  "name": "connection",
+  "name": "@ctx/connection",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "xmlhttprequest": "^1.8.0"
+    "node-fetch": "^1.7.3"
   },
   "devDependencies": {},
   "scripts": {

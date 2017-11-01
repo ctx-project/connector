@@ -2,7 +2,7 @@ var l = function(o) {console.log(o); return o;},
 		require = require || undefined,
 		module = module || {};
 		
-if(require) var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+if(require) var fetch = require("node-fetch");
 
 module.exports = CtxConnection;
 
@@ -16,9 +16,8 @@ CtxConnection.prototype.getUrl = function() {
 	return (this.base.startsWith('http') ? '' : 'http://') + this.base + '/ctx/' + this.user;	
 }
 
-CtxConnection.prototype.hint = function(text, cb) {
-	CtxConnection.ajax(this.getUrl() + '/hint/' + encodeURIComponent(text), cb, this);
-	return this;
+CtxConnection.prototype.hints = async function(text) {
+	return await CtxConnection.fetch(this.getUrl() + '/hints/' + encodeURIComponent(text));
 }
 
 CtxConnection.prototype.getQuery = function() {
@@ -33,17 +32,10 @@ CtxConnection.prototype.sub = function(query) {
 	return new CtxContext(this, query);
 }
 
-CtxConnection.ajax = function(url, cb, details) {
-	var xhr = new XMLHttpRequest();
-
-	xhr.open('GET', url, true);
-	
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState === 4)
-			cb(xhr.responseText, details);
-	}
-	
-	xhr.send();
+CtxConnection.fetch = async function(url) {
+	var r = await fetch(url),
+			t = await r.text();
+	return t;
 }
 
 function CtxContext(parent, query) {
@@ -71,14 +63,12 @@ CtxContext.prototype.getQuery = function() {
 	return this.parent.getQuery() + ' ' + this.query;
 }
 
-CtxContext.prototype.get = function(query, cb) {
-	CtxConnection.ajax(this.getUrl() + '/get/' + encodeURIComponent(this.getQuery() + ' ' + query), cb, this);
-	return this;
+CtxContext.prototype.get = async function(query) {
+	return await CtxConnection.fetch(this.getUrl() + '/get/' + encodeURIComponent(this.getQuery() + ' ' + query));
 }
 
-CtxContext.prototype.put = function(query, cb) {
-	CtxConnection.ajax(this.getUrl() + '/put/' + encodeURIComponent(this.getQuery() + ' ' + query), cb, this);
-	return this;
+CtxContext.prototype.put = async function(query) {
+	return await CtxConnection.fetch(this.getUrl() + '/put/' + encodeURIComponent(this.getQuery() + ' ' + query));
 }
 
 CtxContext.prototype.sub = function(query) {
