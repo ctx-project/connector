@@ -1,10 +1,10 @@
 var l = function(o) {console.log(o); return o;},
-		require = require || undefined,
-		module = module || {};
+		require = require || undefined;
 		
-if(require) var fetch = require("node-fetch");
-
-module.exports = CtxConnection;
+if(require) { 
+	var fetch = require("node-fetch");
+	module.exports = CtxConnection;
+}	
 
 function CtxConnection(base, user) {
 	this.base = base;
