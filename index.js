@@ -22,12 +22,20 @@ CtxConnection.fetch = async function(url) {
 	return t;
 }
 
+CtxConnection.flags = function(verb, flags) {
+	return [verb].concat(Object.entries(flags).filter(e => e[1]).map(e => e[0])).join('-');
+}
+
 CtxConnection.prototype.hints = async function(text) {
 	return await CtxConnection.fetch(this.getUrl('hints', text));
 }
 
-CtxConnection.prototype.get = async function(query) {
-	return await CtxConnection.fetch(this.getUrl('get', query));
+CtxConnection.prototype.get = async function(query, flags = {}) {
+	return await CtxConnection.fetch(this.getUrl(CtxConnection.flags('get', flags), query));
+}
+
+CtxConnection.prototype.head = async function(query, flags = {}) {
+	return await CtxConnection.fetch(this.getUrl(CtxConnection.flags('head', flags), query));
 }
 
 CtxConnection.prototype.put = async function(item) {
