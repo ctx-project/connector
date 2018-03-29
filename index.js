@@ -65,15 +65,26 @@ CtxContext.prototype.getQuery = function() {
 }
 
 CtxContext.prototype.getPath = function() {
-	if(this.isOoc()) return [this.query.slice(1)];
+	var p = [];
 	
-	var p = this.parent.getPath();
-	p.push(this.query);
+	if(this.isOoc('//'))
+		p.push(this.query.slice(2));
+		
+	else if(this.isOoc('/')) { 
+		p = (this.parent.parent ? this.parent.parent : this.parent).getPath();
+		p.push(this.query.slice(1));
+	}
+	
+	else {
+		p = this.parent.getPath();
+		p.push(this.query);
+	}
+	
 	return p;
 }
 
-CtxContext.prototype.isOoc = function() {
-	return this.query.startsWith('\\');
+CtxContext.prototype.isOoc = function(marker) {
+	return this.query.startsWith(marker);
 }
 
 CtxContext.prototype.get = async function() {
@@ -81,10 +92,18 @@ CtxContext.prototype.get = async function() {
 }
 
 CtxContext.prototype.put = async function(item) {
-	//to avoid casing
-	var sub = this.sub();
-	sub.query = item;
-	return await this.connection.put(sub.getQuery());
+	var put = "";
+	
+	if(item.trim().match(/^~\d{3,}$/g)) 
+		put = item;
+	else {
+		//to avoid casing
+		var sub = this.sub();
+		sub.query = item;
+		put = sub.getQuery();
+	}
+	
+	return await this.connection.put(put);
 }
 
 CtxContext.prototype.sub = function(query) {
