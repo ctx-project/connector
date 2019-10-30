@@ -55,8 +55,8 @@ function CtxContext(parent, query) {
 }
 
 CtxContext.prototype.setQuery = function(query) {
-	//casing needed for put - context query should be tags
-	this.query = (query || '').replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).trim();
+	//dot needed for put
+	this.query = (query || '').replace(/\S+/g, function(txt){return '.' + txt;}).trim();
 	return this;
 }
 
@@ -97,7 +97,7 @@ CtxContext.prototype.put = async function(item) {
 	if(item.trim().match(/^~\d{3,}$/g)) 
 		put = item;
 	else {
-		//to avoid casing
+		//to avoid dot
 		var sub = this.sub();
 		sub.query = item;
 		put = sub.getQuery();
